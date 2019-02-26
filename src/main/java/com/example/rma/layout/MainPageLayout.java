@@ -20,8 +20,11 @@ public class MainPageLayout extends CssLayout implements View {
 	protected Button openReport = new Button("Generate Summary");
 	
 	protected TextField year = new TextField("Enter year:");
-	protected Button report = new Button("Generate Summary");
-	protected FormLayout generateReport = new FormLayout(year, report);
+	protected Button report = new Button("Generate Monthly Summary");
+	protected Button reportTSC = new Button("Generate TSC Summary");
+	protected Button reportQuarter = new Button("Generate Quarterly Summary");
+	protected Button reportSupplier = new Button("Generate Supplier Performance Report");
+	protected FormLayout generateReport = new FormLayout(year, report, reportTSC, reportQuarter, reportSupplier);
 	
 	protected VerticalLayout layout = new VerticalLayout(new HorizontalLayout(filter, refresh, create, openReport), display_grid);
 }

@@ -27,6 +27,7 @@ public class Entry {
 	private String remarks;
 	private String status;
 	private int aging;
+	private int trace;
 	
 	public Entry(int entryID, 
 			String supplier, 
@@ -50,7 +51,8 @@ public class Entry {
 			String newSerial, 
 			String remarks, 
 			String status, 
-			int aging) {
+			int aging,
+			int trace) {
 		super();
 		this.entryID = entryID;
 		this.supplier = supplier;
@@ -73,8 +75,9 @@ public class Entry {
 		this.quantityReturned = quantityReturned;
 		this.newSerial = newSerial;
 		this.remarks = remarks;
-		this.status = status;
+		this.status = (quantityRemaining == 0) ? "Closed" : "Open";
 		this.aging = aging;
+		this.trace = trace;
 	}
 	
 	public Entry() {
@@ -83,7 +86,23 @@ public class Entry {
 	
 	public int numberOfColumns() {
 		//do not include entryID
-		return 22;
+		return 23;
+	}
+	
+	public int getTrace() {
+		return trace;
+	}
+	
+	public String getTraceStr() {
+		return String.valueOf(trace);
+	}
+	
+	public void setTrace(int trace) {
+		this.trace = trace;
+	}
+	
+	public void setTrace(String trace) {
+		this.trace = Integer.parseInt(trace);
 	}
 	
 	public int getEntryID() {

@@ -42,6 +42,7 @@ public class EntryForm extends EntryFormLayout {
 	
 	private void bind_fields() {
 		status.setItems("Open", "Closed");
+		trace.setPlaceholder("Leave as 0 if no parent");
 		
 		this.binder.bind(id, Entry::getEntryIDStr, Entry::setEntryID);
 		this.binder.bind(supplier, Entry::getSupplier, Entry::setSupplier);
@@ -60,6 +61,7 @@ public class EntryForm extends EntryFormLayout {
 		this.binder.bind(quantityReturned, Entry::getQuantityReturnedStr, Entry::setQuantityReturned);
 		this.binder.bind(newSerial, Entry::getNewSerial, Entry::setNewSerial);
 		this.binder.bind(status, Entry::getStatus, Entry::setStatus);
+		this.binder.bind(trace, Entry::getTraceStr, Entry::setTrace);
 		
 		this.binder.bind(remarks, Entry::getRemarks, Entry::setRemarks);
 
@@ -79,13 +81,15 @@ public class EntryForm extends EntryFormLayout {
 		save.addClickListener(e -> save());
 		cancel.addClickListener(e -> cancel());
 		delete.addClickListener(e -> delete());
+		delete.setEnabled(false);
 	}
 	
 	private void save() {
 		//if entryID is 0, make a new entry
 		if (currentEntry.getEntryID() == 0) {
 			//19 fields
-			String query = String.format("InsertNewEntry\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f", 
+			String query = String.format(
+					"InsertNewEntry\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f", 
 					supplier.getValue(),
 					so.getValue(),
 					client.getValue(),
@@ -104,7 +108,9 @@ public class EntryForm extends EntryFormLayout {
 					quantityReturned.getValue(),
 					newSerial.getValue(),
 					remarks.getValue(),
-					status.getValue());
+					(Integer.parseInt(quantity.getValue()) - 
+							Integer.parseInt(quantityReturned.getValue()) == 0) ? "Closed" : "Open",
+					trace.getValue());
 
 			System.out.println("-- Create Entry --");
 			
@@ -118,7 +124,8 @@ public class EntryForm extends EntryFormLayout {
 		//if it is not 0, then edit an existing entry
 		else {
 			//19+1 fields
-			String query = String.format("EditEntry\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f", 
+			String query = String.format(
+					"EditEntry\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f", 
 					currentEntry.getEntryID(),
 					supplier.getValue(),
 					so.getValue(),
@@ -138,7 +145,9 @@ public class EntryForm extends EntryFormLayout {
 					quantityReturned.getValue(),
 					newSerial.getValue(),
 					remarks.getValue(),
-					status.getValue());
+					(Integer.parseInt(quantity.getValue()) - 
+							Integer.parseInt(quantityReturned.getValue()) == 0) ? "Closed" : "Open",
+					trace.getValue());
 			
 			System.out.println("-- Edit Entry --");
 			manager.connect();
@@ -159,5 +168,16 @@ public class EntryForm extends EntryFormLayout {
 	private void delete() {
 		parent.refreshView();
 		setVisible(false);
+	}
+	
+	private boolean isDigit(String s) {
+		if (s.matches("[0-9]+")) return true;
+		else return false;
+	}
+	
+	private boolean validate() {
+		if (!isDigit(quantity.getValue()) || !isDigit(nonWorkingDays.getValue()) || !isDigit(quantityReturned.getValue())
+				|| !isDigit(trace.getValue())) return false;
+		return true;
 	}
 }

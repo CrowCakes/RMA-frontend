@@ -1,11 +1,7 @@
 package com.example.rma.content;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +13,7 @@ import com.example.rma.layout.MainPageLayout;
 import com.example.rma.classes.OnDemandFileDownloader;
 import com.example.rma.classes.Entry;
 import com.example.rma.classes.ObjectConstructor;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
@@ -58,12 +55,31 @@ public class MainPage extends MainPageLayout {
 		
 		openReport.addClickListener(e -> {
 			year.setValue("");
+			entryForm.setVisible(false);
 			generateReport.setVisible(true);
 		});
 		
 		report.addClickListener(e -> {
 			//generateReport.setVisible(false);
-			report.setEnabled(false);
+			disableReportButtons();
+			Notification.show("Notice", "Please wait while the report is generated", Notification.Type.TRAY_NOTIFICATION);
+		});
+		
+		reportTSC.addClickListener(e -> {
+			//generateReport.setVisible(false);
+			disableReportButtons();
+			Notification.show("Notice", "Please wait while the report is generated", Notification.Type.TRAY_NOTIFICATION);
+		});
+		
+		reportQuarter.addClickListener(e -> {
+			//generateReport.setVisible(false);
+			disableReportButtons();
+			Notification.show("Notice", "Please wait while the report is generated", Notification.Type.TRAY_NOTIFICATION);
+		});
+		
+		reportSupplier.addClickListener(e -> {
+			//generateReport.setVisible(false);
+			disableReportButtons();
 			Notification.show("Notice", "Please wait while the report is generated", Notification.Type.TRAY_NOTIFICATION);
 		});
 		
@@ -90,10 +106,84 @@ public class MainPage extends MainPageLayout {
          OnDemandFileDownloader downloader = new OnDemandFileDownloader(
         	        resource);
          downloader.extend(report);
+         
+         OnDemandFileDownloader.OnDemandStreamResource resourceQuarter = new  OnDemandFileDownloader.OnDemandStreamResource()
+         {
+             @Override
+             public String getFilename()
+             {
+             	return String.format("RMA Quarterly Summary - %s.xls", year.getValue());
+             }
+
+             @Override
+             public InputStream getStream()
+             {	
+                 return new ByteArrayInputStream(
+                 		constructor.generateReportQuarter(
+                 				manager, 
+                 				Integer.parseInt(year.getValue())
+                 		)
+                 );
+             }
+          };
+          
+         OnDemandFileDownloader downloaderQuarter = new OnDemandFileDownloader(
+         	        resourceQuarter);
+         downloaderQuarter.extend(reportQuarter);
+         
+         OnDemandFileDownloader.OnDemandStreamResource resourceTSC = new  OnDemandFileDownloader.OnDemandStreamResource()
+         {
+             @Override
+             public String getFilename()
+             {
+             	return String.format("RMA TSC Summary - %s.xls", year.getValue());
+             }
+
+             @Override
+             public InputStream getStream()
+             {	
+                 return new ByteArrayInputStream(
+                 		constructor.generateReportTSC(
+                 				manager, 
+                 				Integer.parseInt(year.getValue())
+                 		)
+                 );
+             }
+          };
+          
+          OnDemandFileDownloader downloaderTSC = new OnDemandFileDownloader(
+         	        resourceTSC);
+         downloaderTSC.extend(reportTSC);
+         
+         OnDemandFileDownloader.OnDemandStreamResource resourceSupplier = new  OnDemandFileDownloader.OnDemandStreamResource()
+         {
+             @Override
+             public String getFilename()
+             {
+             	return String.format("RMA Supplier Performance - %s.xls", year.getValue());
+             }
+
+             @Override
+             public InputStream getStream()
+             {	
+                 return new ByteArrayInputStream(
+                 		constructor.generateReportSupplier(
+                 				manager, 
+                 				Integer.parseInt(year.getValue())
+                 		)
+                 );
+             }
+          };
+          
+          OnDemandFileDownloader downloaderSupplier = new OnDemandFileDownloader(
+         	        resourceSupplier);
+         downloaderSupplier.extend(reportSupplier);
 	}
 	
 	private void prepareGrid(String user) {
-		filter.setPlaceholder("Sample text");
+		filter.setPlaceholder("Search by RTS#");
+		filter.addValueChangeListener(e -> filterView());
+		filter.setValueChangeMode(ValueChangeMode.LAZY);
 		
 		display_grid.setHeight("250px");
 		display_grid.setWidth("1125px");
@@ -125,14 +215,14 @@ public class MainPage extends MainPageLayout {
 	
 	private void preparePanel() {
 		year.setPlaceholder("Example: 2018");
-		report.setEnabled(false);
+		disableReportButtons();
 		
 		year.addValueChangeListener(e -> {
 			if (year.getValue().length() == 4 && isDigit(year.getValue())) {
-				report.setEnabled(true);
+				enableReportButtons();
 			}
 			else {
-				report.setEnabled(false);
+				disableReportButtons();
 			}
 		});
 		
@@ -150,7 +240,7 @@ public class MainPage extends MainPageLayout {
 		return new Entry(0, "", "", "", new Date(DateTime.now().getMillis()), "", "",
 				"", new Date(DateTime.now().getMillis()), 0, "", new Date(DateTime.now().getMillis()), new Date(DateTime.now().getMillis()),
 				0, 0, "", "", 0, 0,
-				"", "", "", 0);
+				"", "", "", 0, 0);
 	}
 	
 	public void refreshView() {
@@ -164,6 +254,31 @@ public class MainPage extends MainPageLayout {
 		display_grid.setItems(update);
 		
 		//testGrid();
+	}
+	
+	private void filterView() {
+		display_grid.deselectAll();
+		
+		//System.out.println("-- Filter --");
+		manager.connect();
+		List<Entry> update = constructor.filterEntry(manager, filter.getValue());
+		manager.disconnect();
+		
+		display_grid.setItems(update);
+	}
+	
+	private void enableReportButtons() {
+		report.setEnabled(true);
+		reportTSC.setEnabled(true);
+		reportQuarter.setEnabled(true);
+		reportSupplier.setEnabled(true);
+	}
+	
+	private void disableReportButtons() {
+		report.setEnabled(false);
+		reportTSC.setEnabled(false);
+		reportQuarter.setEnabled(false);
+		reportSupplier.setEnabled(false);
 	}
 
 	private boolean isDigit(String s) {
