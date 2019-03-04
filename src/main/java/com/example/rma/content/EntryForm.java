@@ -85,6 +85,11 @@ public class EntryForm extends EntryFormLayout {
 	}
 	
 	private void save() {
+		if (!validate()) {
+			Notification.show("Error", "Please make sure your Quantity, Non-Working Days, Quantity Returned, and Trace# are all digits only", Notification.Type.ERROR_MESSAGE);
+			return;
+		}
+		
 		//if entryID is 0, make a new entry
 		if (currentEntry.getEntryID() == 0) {
 			//19 fields

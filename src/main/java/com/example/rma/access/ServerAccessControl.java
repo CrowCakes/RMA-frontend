@@ -22,7 +22,7 @@ implements AccessControl {
 	
     public String signIn(ConnectionManager manager, String username, String password) {
     	
-    	String auth_pw = this.generatePWHash(password);
+    	//String auth_pw = this.generatePWHash(password);
     	String result = "";
     	
     	int indexAt;
