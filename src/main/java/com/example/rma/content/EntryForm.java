@@ -2,6 +2,8 @@ package com.example.rma.content;
 
 import java.sql.Date;
 
+import org.vaadin.dialogs.ConfirmDialog;
+
 import com.example.rma.classes.ConnectionManager;
 import com.example.rma.classes.Entry;
 import com.example.rma.layout.EntryFormLayout;
@@ -80,8 +82,21 @@ public class EntryForm extends EntryFormLayout {
 	private void prepare_buttons() {
 		save.addClickListener(e -> save());
 		cancel.addClickListener(e -> cancel());
-		delete.addClickListener(e -> delete());
-		delete.setEnabled(false);
+		delete.addClickListener(e -> ConfirmDialog.show(this.getUI(), 
+				"Confirmation", "Delete this entry?", "Yes", "No",
+				new ConfirmDialog.Listener() {
+					public void onClose(ConfirmDialog dialog) {
+		        		if (dialog.isConfirmed()) {
+		        			delete();
+		        		}
+		        		else {
+		        			
+		        		}
+					}
+				}
+			)
+		);
+		//delete.setEnabled(true);
 	}
 	
 	private void save() {
@@ -171,6 +186,16 @@ public class EntryForm extends EntryFormLayout {
 	}
 	
 	private void delete() {
+		String query = String.format("DeleteEntry\f%s\f", id.getValue());
+		
+		System.out.println("-- Delete Entry --");
+		//System.out.println(query);
+		manager.connect();
+		String result = manager.send(query);
+		manager.disconnect();
+		
+		Notification.show("Delete Entry", result, Notification.Type.HUMANIZED_MESSAGE);
+		
 		parent.refreshView();
 		setVisible(false);
 	}

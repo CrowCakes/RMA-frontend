@@ -3,7 +3,6 @@ package com.example.rma.classes;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Date;
-import java.time.format.FormatStyle;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,10 +16,8 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
-import org.joda.time.DateTime;
 
 public class ObjectConstructor {
 	private int NUMBER_OF_COLUMNS = 24;
