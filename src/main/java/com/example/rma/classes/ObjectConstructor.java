@@ -76,7 +76,24 @@ public class ObjectConstructor {
 		return parsed_data;
 	}
 	
-	private List<List<String>> parseSupplierSummary(String foo) {
+	private List<String> parseSuppliers(String foo) {
+		List<String> parsed_data = new ArrayList<>();
+		List<String> bar = new ArrayList<String>(Arrays.asList(foo.split("::\n")));
+		
+		List<String> foobar;
+		for (int i=0; i < bar.size(); i = i + 1) {
+			foobar = new ArrayList<>(Arrays.asList(bar.get(i)));
+			if (foobar.get(0).equals("")) {
+				continue;
+			}
+			
+			parsed_data.add(foobar.get(0));
+		}
+		
+		return parsed_data;
+	}
+	
+ 	private List<List<String>> parseSupplierSummary(String foo) {
 		List<List<String>> parsed_data = new ArrayList<>();
 		List<String> bar = new ArrayList<String>(Arrays.asList(foo.split("::\n")));
 		
@@ -103,10 +120,20 @@ public class ObjectConstructor {
 		return parsed_data;
 	}
 	
+	public List<Entry> constructOpenEntry(ConnectionManager manager) {
+		List<Entry> parsed_data = new ArrayList<>();
+		
+		String query = manager.send("ViewOpenEntries\f");
+		
+		parsed_data = parseEntry(query);
+		
+		return parsed_data;
+	}
+	
 	public List<Entry> filterEntry(ConnectionManager manager, String rts) {
 		List<Entry> parsed_data = new ArrayList<>();
 		
-		String query = String.format("FilterEntry\f%s\f", rts);
+		String query = String.format("FilterEntries\f%s\f", rts);
 		
 		String result = manager.send(query);
 		
@@ -119,6 +146,19 @@ public class ObjectConstructor {
 		List<Entry> parsed_data = new ArrayList<>();
 		
 		String query = String.format("GenerateReport\f%s\f", year);
+		
+		String result = manager.send(query);
+		
+		parsed_data = parseEntry(result);
+		
+		//System.out.println(String.format("constructEntryForYear: result size is %s", parsed_data.size()));
+		return parsed_data;
+	}
+	
+	public List<Entry> constructOpenEntryForYear(ConnectionManager manager, int year) {
+		List<Entry> parsed_data = new ArrayList<>();
+		
+		String query = String.format("GenerateOpenReport\f%s\f", year);
 		
 		String result = manager.send(query);
 		
@@ -153,10 +193,38 @@ public class ObjectConstructor {
 		return parsed_data;
 	}
 	
+	public List<Entry> constructEntryForIndividualSupplier(ConnectionManager manager, int year, String supplier) {
+		
+		String query = String.format("GenerateReportIndividualSupplier\f%s\f%s\f", year, supplier);
+		
+		String result = manager.send(query);
+		
+		List<Entry> parsed_data = parseEntry(result);
+		
+		return parsed_data;
+	}
+	
+	public List<String> constructSuppliers(ConnectionManager manager) {
+		manager.connect();
+		String data = manager.send("ViewSuppliers\f");
+		manager.disconnect();
+		
+		return parseSuppliers(data);
+	}
+	
 	public byte[] generateReport(ConnectionManager manager, int inputYear) {
 		//gather necessary data
 		manager.connect();
 		List<List<Entry>> data = classifyByMonth(constructEntryForYear(manager, inputYear));
+		manager.disconnect();
+		
+		return formatReport(data, inputYear);
+	}
+	
+	public byte[] generateReportOpen(ConnectionManager manager, int inputYear) {
+		//gather necessary data
+		manager.connect();
+		List<List<Entry>> data = classifyByMonth(constructOpenEntryForYear(manager, inputYear));
 		manager.disconnect();
 		
 		return formatReport(data, inputYear);
@@ -186,6 +254,14 @@ public class ObjectConstructor {
 		manager.disconnect();
 		
 		return formatSupplierReport(data, inputYear);
+	}
+	
+	public byte[] generateReportIndividualSupplier(ConnectionManager manager, int inputYear, String supplier) {
+		manager.connect();
+		List<List<Entry>> data = classifyByMonth(constructEntryForIndividualSupplier(manager, inputYear, supplier));
+		manager.disconnect();
+		
+		return formatReport(data, inputYear);
 	}
 	
 	private byte[] formatReport(List<List<Entry>> data, int inputYear) {

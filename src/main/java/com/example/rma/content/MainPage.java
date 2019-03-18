@@ -48,6 +48,11 @@ public class MainPage extends MainPageLayout {
 		}
 		);
 		
+		viewOpen.addClickListener(e -> {
+			viewOpenEntries();
+			generateReport.setVisible(false);
+		});
+		
 		create.addClickListener(e -> {
 			generateReport.setVisible(false);
 			entryForm.setEntry(emptyEntry());
@@ -81,6 +86,18 @@ public class MainPage extends MainPageLayout {
 			//generateReport.setVisible(false);
 			disableReportButtons();
 			Notification.show("Notice", "Please wait while the report is generated", Notification.Type.TRAY_NOTIFICATION);
+		});
+		
+		reportOpen.addClickListener(e -> {
+			//generateReport.setVisible(false);
+			disableReportButtons();
+			Notification.show("Notice", "Please wait while the report is generated", Notification.Type.TRAY_NOTIFICATION);
+		});
+		
+		reportIndividualSupplier.addClickListener(e -> {
+			//generateReport.setVisible(false);
+			disableReportButtons();
+			Notification.show("Notice", "Please refresh the page after the report is generated", Notification.Type.TRAY_NOTIFICATION);
 		});
 		
 		OnDemandFileDownloader.OnDemandStreamResource resource = new  OnDemandFileDownloader.OnDemandStreamResource()
@@ -178,10 +195,59 @@ public class MainPage extends MainPageLayout {
           OnDemandFileDownloader downloaderSupplier = new OnDemandFileDownloader(
          	        resourceSupplier);
          downloaderSupplier.extend(reportSupplier);
+         
+         OnDemandFileDownloader.OnDemandStreamResource resourceOpen = new  OnDemandFileDownloader.OnDemandStreamResource()
+         {
+             @Override
+             public String getFilename()
+             {
+             	return String.format("RMA Open Entries - %s.xls", year.getValue());
+             }
+
+             @Override
+             public InputStream getStream()
+             {	
+                 return new ByteArrayInputStream(
+                 		constructor.generateReportOpen(
+                 				manager, 
+                 				Integer.parseInt(year.getValue())
+                 		)
+                 );
+             }
+          };
+          
+          OnDemandFileDownloader downloaderOpen = new OnDemandFileDownloader(
+         	        resourceOpen);
+         downloaderOpen.extend(reportOpen);
+         
+         OnDemandFileDownloader.OnDemandStreamResource resourceIndividualSupplier = new  OnDemandFileDownloader.OnDemandStreamResource()
+         {
+             @Override
+             public String getFilename()
+             {
+             	return String.format("RMA %s - %s.xls", supplier.getValue(), year.getValue());
+             }
+
+             @Override
+             public InputStream getStream()
+             {	
+                 return new ByteArrayInputStream(
+                 		constructor.generateReportIndividualSupplier(
+                 				manager, 
+                 				Integer.parseInt(year.getValue()),
+                 				supplier.getValue()
+                 		)
+                 );
+             }
+          };
+          
+          OnDemandFileDownloader downloaderIndividualSupplier = new OnDemandFileDownloader(
+         	        resourceIndividualSupplier);
+         downloaderIndividualSupplier.extend(reportIndividualSupplier);
 	}
 	
 	private void prepareGrid(String user) {
-		filter.setPlaceholder("Search by RTS#");
+		filter.setPlaceholder("Search RTS# or Supplier name");
 		filter.addValueChangeListener(e -> filterView());
 		filter.setValueChangeMode(ValueChangeMode.LAZY);
 		
@@ -189,6 +255,7 @@ public class MainPage extends MainPageLayout {
 		display_grid.setWidth("1125px");
 		display_grid.setSelectionMode(Grid.SelectionMode.SINGLE);
 		
+		display_grid.addColumn(Entry::getEntryID).setCaption("Entry#");
 		display_grid.addColumn(Entry::getSupplier).setCaption("Supplier");
 		display_grid.addColumn(Entry::getSalesOrder).setCaption("SO#");
 		display_grid.addColumn(Entry::getClient).setCaption("Client");
@@ -226,6 +293,15 @@ public class MainPage extends MainPageLayout {
 			}
 		});
 		
+		supplier.addValueChangeListener(e -> {
+			if (year.getValue().length() == 4 && isDigit(year.getValue()) && !supplier.getValue().isEmpty()) {
+				reportIndividualSupplier.setEnabled(true);
+			}
+			else {
+				reportIndividualSupplier.setEnabled(false);
+			}
+		});
+		
 		generateReport.setVisible(false);
 		layout.addComponent(generateReport);
 	}
@@ -251,6 +327,22 @@ public class MainPage extends MainPageLayout {
 		List<Entry> update = constructor.constructEntry(manager);
 		manager.disconnect();
 		
+		List<String> updateSuppliers = constructor.constructSuppliers(manager);
+		
+		display_grid.setItems(update);
+		supplier.setItems(updateSuppliers);
+		
+		//testGrid();
+	}
+	
+	public void viewOpenEntries() {
+		display_grid.deselectAll();
+		
+		//System.out.println("-- Refresh --");
+		manager.connect();
+		List<Entry> update = constructor.constructOpenEntry(manager);
+		manager.disconnect();
+		
 		display_grid.setItems(update);
 		
 		//testGrid();
@@ -272,6 +364,8 @@ public class MainPage extends MainPageLayout {
 		reportTSC.setEnabled(true);
 		reportQuarter.setEnabled(true);
 		reportSupplier.setEnabled(true);
+		reportOpen.setEnabled(true);
+		supplier.setEnabled(true);
 	}
 	
 	private void disableReportButtons() {
@@ -279,6 +373,9 @@ public class MainPage extends MainPageLayout {
 		reportTSC.setEnabled(false);
 		reportQuarter.setEnabled(false);
 		reportSupplier.setEnabled(false);
+		reportOpen.setEnabled(false);
+		supplier.setEnabled(false);
+		reportIndividualSupplier.setEnabled(false);
 	}
 
 	private boolean isDigit(String s) {
