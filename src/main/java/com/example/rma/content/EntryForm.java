@@ -63,6 +63,8 @@ public class EntryForm extends EntryFormLayout {
 		this.binder.bind(quantityReturned, Entry::getQuantityReturnedStr, Entry::setQuantityReturned);
 		this.binder.bind(newSerial, Entry::getNewSerial, Entry::setNewSerial);
 		this.binder.bind(status, Entry::getStatus, Entry::setStatus);
+		this.binder.bind(supplierPOS, Entry::getSupplierPOS, Entry::setSupplierPOS);
+		this.binder.bind(supplierReturned, Entry::getSupplierReturned, Entry::setSupplierReturned);
 		this.binder.bind(trace, Entry::getTraceStr, Entry::setTrace);
 		
 		this.binder.bind(remarks, Entry::getRemarks, Entry::setRemarks);
@@ -107,9 +109,9 @@ public class EntryForm extends EntryFormLayout {
 		
 		//if entryID is 0, make a new entry
 		if (currentEntry.getEntryID() == 0) {
-			//19 fields
+			//22 fields
 			String query = String.format(
-					"InsertNewEntry\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f", 
+					"InsertNewEntry\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f", 
 					supplier.getValue(),
 					so.getValue(),
 					client.getValue(),
@@ -130,6 +132,8 @@ public class EntryForm extends EntryFormLayout {
 					remarks.getValue(),
 					(Integer.parseInt(quantity.getValue()) - 
 							Integer.parseInt(quantityReturned.getValue()) == 0) ? "Closed" : "Open",
+					supplierPOS.getValue(),
+					supplierReturned.getValue(),
 					trace.getValue());
 
 			System.out.println("-- Create Entry --");
@@ -143,9 +147,9 @@ public class EntryForm extends EntryFormLayout {
 		}
 		//if it is not 0, then edit an existing entry
 		else {
-			//19+1 fields
+			//22+1 fields
 			String query = String.format(
-					"EditEntry\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f", 
+					"EditEntry\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f", 
 					currentEntry.getEntryID(),
 					supplier.getValue(),
 					so.getValue(),
@@ -167,6 +171,8 @@ public class EntryForm extends EntryFormLayout {
 					remarks.getValue(),
 					(Integer.parseInt(quantity.getValue()) - 
 							Integer.parseInt(quantityReturned.getValue()) == 0) ? "Closed" : "Open",
+					supplierPOS.getValue(),
+					supplierReturned.getValue(),
 					trace.getValue());
 			
 			System.out.println("-- Edit Entry --");

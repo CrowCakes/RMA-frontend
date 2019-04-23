@@ -3,6 +3,9 @@ package com.example.rma.classes;
 import java.sql.Date;
 import java.time.LocalDate;
 
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+
 public class Entry {
 	private int entryID;
 	private String supplier;
@@ -26,6 +29,8 @@ public class Entry {
 	private String newSerial;
 	private String remarks;
 	private String status;
+	private String supplierPOS;
+	private String supplierReturned;
 	private int aging;
 	private int trace;
 	
@@ -52,6 +57,8 @@ public class Entry {
 			String remarks, 
 			String status, 
 			int aging,
+			String supplierPOS,
+			String supplierReturned,
 			int trace) {
 		super();
 		this.entryID = entryID;
@@ -77,7 +84,14 @@ public class Entry {
 		this.remarks = remarks;
 		this.status = (quantityRemaining == 0) ? "Closed" : "Open";
 		this.aging = aging;
+		this.supplierPOS = supplierPOS;
+		this.supplierReturned = supplierReturned;
 		this.trace = trace;
+		
+		if (this.status.equals("Closed")) this.aging = Days.daysBetween(
+				new DateTime(receiveDate.getTime()), 
+				new DateTime(returnDate.getTime())
+				).getDays();
 	}
 	
 	public Entry() {
@@ -132,6 +146,9 @@ public class Entry {
 	}
 	public int getAging() {
 		return aging;
+	}
+	public void setAging(int aging) {
+		this.aging = aging;
 	}
 	public int getQuantityRemaining() {
 		return quantityRemaining;
@@ -297,5 +314,21 @@ public class Entry {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getSupplierPOS() {
+		return supplierPOS;
+	}
+
+	public void setSupplierPOS(String supplierPOS) {
+		this.supplierPOS = supplierPOS;
+	}
+
+	public String getSupplierReturned() {
+		return supplierReturned;
+	}
+
+	public void setSupplierReturned(String supplierReturned) {
+		this.supplierReturned = supplierReturned;
 	}
 }

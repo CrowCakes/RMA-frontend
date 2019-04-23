@@ -20,7 +20,7 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 
 public class ObjectConstructor {
-	private int NUMBER_OF_COLUMNS = 24;
+	private int NUMBER_OF_COLUMNS = 26;
 	
 	private List<Entry> parseEntry(String foo) {
 		List<Entry> parsed_data = new ArrayList<>();
@@ -69,7 +69,9 @@ public class ObjectConstructor {
 					foobar.get(20), 
 					foobar.get(21), 
 					Integer.parseInt(foobar.get(22)),
-					Integer.parseInt(foobar.get(23))
+					foobar.get(23),
+					foobar.get(24),
+					Integer.parseInt(foobar.get(25))
 					));
 		}
 		
@@ -312,6 +314,7 @@ public class ObjectConstructor {
 		//columnStyle.setBorderTop(BorderStyle.MEDIUM);
 		columnStyle.setBorderBottom(BorderStyle.MEDIUM);
 		columnStyle.setFont(font);
+		columnStyle.setWrapText(true);
 
 		CellStyle cellStyle=workbook.createCellStyle();
 		cellStyle.setAlignment(HorizontalAlignment.CENTER);
@@ -405,14 +408,20 @@ public class ObjectConstructor {
 
 			cell = row.createCell(20);
 			cell.setCellValue("Status");
-
+			
 			cell = row.createCell(21);
-			cell.setCellValue("Aging");
-
+			cell.setCellValue("For Supplier Reference: Pull-out Slip");
+			
 			cell = row.createCell(22);
-			cell.setCellValue("Entry ID#");
+			cell.setCellValue("For Supplier Reference: Return Slip");
 
 			cell = row.createCell(23);
+			cell.setCellValue("Aging");
+
+			cell = row.createCell(24);
+			cell.setCellValue("Entry ID#");
+
+			cell = row.createCell(25);
 			cell.setCellValue("Parent ID#");
 
 			for (int i = 0; i<NUMBER_OF_COLUMNS; i++) {
@@ -577,16 +586,22 @@ public class ObjectConstructor {
 						);
 
 				cell = row.createCell(21);
+				cell.setCellValue(dataRow.getSupplierPOS());
+				
+				cell = row.createCell(22);
+				cell.setCellValue(dataRow.getSupplierReturned());
+				
+				cell = row.createCell(23);
 				cell.setCellValue(dataRow.getAging());
-				maxNumCharacters.set(21, 
+				maxNumCharacters.set(22, 
 						(String.valueOf(dataRow.getAging()).length() > maxNumCharacters.get(21)) ? 
 								String.valueOf(dataRow.getAging()).length() : maxNumCharacters.get(21)
 						);
 
-				cell = row.createCell(22);
+				cell = row.createCell(24);
 				cell.setCellValue(dataRow.getEntryID());
 
-				cell = row.createCell(23);
+				cell = row.createCell(25);
 				cell.setCellValue(dataRow.getTrace());
 
 				if (i > 0) {

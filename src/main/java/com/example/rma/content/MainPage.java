@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 
 import com.example.rma.classes.ConnectionManager;
 import com.example.rma.layout.MainPageLayout;
@@ -67,31 +68,31 @@ public class MainPage extends MainPageLayout {
 		report.addClickListener(e -> {
 			//generateReport.setVisible(false);
 			disableReportButtons();
-			Notification.show("Notice", "Please wait while the report is generated", Notification.Type.TRAY_NOTIFICATION);
+			Notification.show("Notice", "Please refresh the page after the report is generated", Notification.Type.TRAY_NOTIFICATION);
 		});
 		
 		reportTSC.addClickListener(e -> {
 			//generateReport.setVisible(false);
 			disableReportButtons();
-			Notification.show("Notice", "Please wait while the report is generated", Notification.Type.TRAY_NOTIFICATION);
+			Notification.show("Notice", "Please refresh the page after the report is generated", Notification.Type.TRAY_NOTIFICATION);
 		});
 		
 		reportQuarter.addClickListener(e -> {
 			//generateReport.setVisible(false);
 			disableReportButtons();
-			Notification.show("Notice", "Please wait while the report is generated", Notification.Type.TRAY_NOTIFICATION);
+			Notification.show("Notice", "Please refresh the page after the report is generated", Notification.Type.TRAY_NOTIFICATION);
 		});
 		
 		reportSupplier.addClickListener(e -> {
 			//generateReport.setVisible(false);
 			disableReportButtons();
-			Notification.show("Notice", "Please wait while the report is generated", Notification.Type.TRAY_NOTIFICATION);
+			Notification.show("Notice", "Please refresh the page after the report is generated", Notification.Type.TRAY_NOTIFICATION);
 		});
 		
 		reportOpen.addClickListener(e -> {
 			//generateReport.setVisible(false);
 			disableReportButtons();
-			Notification.show("Notice", "Please wait while the report is generated", Notification.Type.TRAY_NOTIFICATION);
+			Notification.show("Notice", "Please refresh the page after the report is generated", Notification.Type.TRAY_NOTIFICATION);
 		});
 		
 		reportIndividualSupplier.addClickListener(e -> {
@@ -269,6 +270,8 @@ public class MainPage extends MainPageLayout {
 		display_grid.addColumn(Entry::getStatus).setCaption("Status");
 		display_grid.addColumn(Entry::getAging).setCaption("Aging");
 		
+		display_grid.setFrozenColumnCount(1);
+		
         if (user.equals("Admin")) {
             this.display_grid.asSingleSelect().addValueChangeListener(event -> {
                 if (event.getValue() == null) {
@@ -316,7 +319,7 @@ public class MainPage extends MainPageLayout {
 		return new Entry(0, "", "", "", new Date(DateTime.now().getMillis()), "", "",
 				"", new Date(DateTime.now().getMillis()), 0, "", new Date(DateTime.now().getMillis()), new Date(DateTime.now().getMillis()),
 				0, 0, "", "", 0, 0,
-				"", "", "", 0, 0);
+				"", "", "", 0, "", "", 0);
 	}
 	
 	public void refreshView() {

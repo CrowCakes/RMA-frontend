@@ -27,6 +27,8 @@ public class EntryFormLayout extends Panel {
 	protected TextField quantityReturned = new TextField("Qty Returned");
 	protected TextField newSerial = new TextField("New Serial#");
 	protected NativeSelect<String> status = new NativeSelect<>("Status");
+	protected TextField supplierPOS = new TextField("For Supplier Reference: Pull-out Slip");
+	protected TextField supplierReturned = new TextField("For Supplier Reference: Return Slip");
 	protected TextField trace = new TextField("Parent Entry#");
 	
 	protected TextArea remarks = new TextArea("Remarks");
@@ -45,13 +47,14 @@ public class EntryFormLayout extends Panel {
 			so, client, rts, description,
 			serial, quantity);
 	protected HorizontalLayout fields2 = new HorizontalLayout(problem, nonWorkingDays,
-			turnaround, quantityRemaining, pos, rtc, quantityReturned, newSerial);
+			turnaround, quantityRemaining, pos, rtc, quantityReturned);
+	protected HorizontalLayout fields3 = new HorizontalLayout(newSerial, supplierPOS, supplierReturned);
 	protected HorizontalLayout dates = new HorizontalLayout(receiveDate, reportDate,
 			pullOutDate, returnDate, status);
 	
 	protected HorizontalLayout buttons = new HorizontalLayout(save, cancel, delete);
 
-	protected VerticalLayout layout = new VerticalLayout(fields, fields1, fields2, dates, 
+	protected VerticalLayout layout = new VerticalLayout(fields, fields1, fields2, fields3, dates, 
 			remarks,
 			buttons);
 }
