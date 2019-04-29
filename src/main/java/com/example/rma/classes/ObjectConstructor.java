@@ -22,6 +22,21 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 public class ObjectConstructor {
 	private int NUMBER_OF_COLUMNS = 26;
 	
+	/**
+	 * Returns the number of Entries represented in the passed String.
+	 * @param foo
+	 * @return
+	 */
+	private int entryCount(String foo) {
+		List<String> bar = new ArrayList<String>(Arrays.asList(foo.split("::\n")));
+		return bar.size();
+	}
+	
+	/**
+	 * Processes the given String to return a list of Entries represented by the String.
+	 * @param foo
+	 * @return
+	 */
 	private List<Entry> parseEntry(String foo) {
 		List<Entry> parsed_data = new ArrayList<>();
 		List<String> bar = new ArrayList<String>(Arrays.asList(foo.split("::\n")));
@@ -78,6 +93,76 @@ public class ObjectConstructor {
 		return parsed_data;
 	}
 	
+	/**
+	 * Processes the given String to return a list of the given length of Entries represented by the String,
+	 * starting at the given index.
+	 * @param foo
+	 * @param offset
+	 * @param limit
+	 * @return
+	 */
+	private List<Entry> parseEntry(String foo, int offset, int limit) {
+		List<Entry> parsed_data = new ArrayList<>();
+		List<String> bar = new ArrayList<String>(Arrays.asList(foo.split("::\n")));
+		bar = bar.subList(offset, offset+limit);
+		
+		//System.out.println("-- parseEntry --");
+		//System.out.println(bar);
+		
+		List<String> foobar;
+		for (int i=0; i < bar.size(); i = i + 1) {
+			foobar = new ArrayList<>(Arrays.asList(bar.get(i).split("\\s*::,\\s*")));
+
+			//System.out.println("bar:");
+			//System.out.println(bar.get(i));
+			
+			//System.out.println("foobar:");
+			//System.out.println(foobar);
+			
+			if (i==0 && foobar.size() == 1) {
+				// no results
+				break;
+			}
+			
+			//add the new entry
+			parsed_data.add(new Entry(
+					Integer.parseInt(foobar.get(0)), 
+					foobar.get(1), 
+					foobar.get(2), 
+					foobar.get(3), 
+					Date.valueOf(foobar.get(4)), 
+					foobar.get(5), 
+					foobar.get(6),
+					foobar.get(7), 
+					Date.valueOf(foobar.get(8)), 
+					Integer.parseInt(foobar.get(9)), 
+					foobar.get(10), 
+					Date.valueOf(foobar.get(11)), 
+					Date.valueOf(foobar.get(12)),
+					Integer.valueOf(foobar.get(13)), 
+					Integer.valueOf(foobar.get(14)), 
+					foobar.get(15),
+					foobar.get(16), 
+					Integer.parseInt(foobar.get(17)),
+					Integer.parseInt(foobar.get(18)),
+					foobar.get(19), 
+					foobar.get(20), 
+					foobar.get(21), 
+					Integer.parseInt(foobar.get(22)),
+					foobar.get(23),
+					foobar.get(24),
+					Integer.parseInt(foobar.get(25))
+					));
+		}
+		
+		return parsed_data;
+	}
+	
+	/**
+	 * Processes the given String to return the list of Suppliers represented by the String.
+	 * @param foo
+	 * @return
+	 */
 	private List<String> parseSuppliers(String foo) {
 		List<String> parsed_data = new ArrayList<>();
 		List<String> bar = new ArrayList<String>(Arrays.asList(foo.split("::\n")));
@@ -95,6 +180,11 @@ public class ObjectConstructor {
 		return parsed_data;
 	}
 	
+	/**
+	 * Processes the given String to return data that will be used in generating the Supplier Summary report.
+	 * @param foo
+	 * @return
+	 */
  	private List<List<String>> parseSupplierSummary(String foo) {
 		List<List<String>> parsed_data = new ArrayList<>();
 		List<String> bar = new ArrayList<String>(Arrays.asList(foo.split("::\n")));
@@ -112,6 +202,11 @@ public class ObjectConstructor {
 		return parsed_data;
 	}
 	
+ 	/**
+ 	 * Queries server for and returns the list of all Entries.
+ 	 * @param manager
+ 	 * @return
+ 	 */
 	public List<Entry> constructEntry(ConnectionManager manager) {
 		List<Entry> parsed_data = new ArrayList<>();
 		
@@ -122,6 +217,38 @@ public class ObjectConstructor {
 		return parsed_data;
 	}
 	
+	/**
+	 * Queries server for and returns the list of all Entries, from the given index until a certain index.
+	 * @param manager
+	 * @param offset
+	 * @param limit
+	 * @return
+	 */
+	public List<Entry> constructEntry(ConnectionManager manager, int offset, int limit) {
+		List<Entry> parsed_data = new ArrayList<>();
+		
+		String query = manager.send("ViewEntries\f");
+		
+		parsed_data = parseEntry(query, offset, limit);
+		
+		return parsed_data;
+	}
+	
+	/**
+	 * Returns the number of total Entries in the database.
+	 * @param manager
+	 * @return
+	 */
+	public int getEntryCount(ConnectionManager manager) {
+		String query = manager.send("ViewEntries\f");
+		return entryCount(query);
+	}
+	
+	/**
+	 * Queries server for and returns the list of all Open-status Entries.
+	 * @param manager
+	 * @return
+	 */
 	public List<Entry> constructOpenEntry(ConnectionManager manager) {
 		List<Entry> parsed_data = new ArrayList<>();
 		
@@ -132,6 +259,12 @@ public class ObjectConstructor {
 		return parsed_data;
 	}
 	
+	/**
+	 * Queries server for and returns the list of all Entries whose RTS# contains the given String.
+	 * @param manager
+	 * @param rts
+	 * @return
+	 */
 	public List<Entry> filterEntry(ConnectionManager manager, String rts) {
 		List<Entry> parsed_data = new ArrayList<>();
 		
@@ -144,6 +277,12 @@ public class ObjectConstructor {
 		return parsed_data;
 	}
 
+	/**
+	 * Queries server for and returns the list of all Entries for the given year.
+	 * @param manager
+	 * @param year
+	 * @return
+	 */
 	public List<Entry> constructEntryForYear(ConnectionManager manager, int year) {
 		List<Entry> parsed_data = new ArrayList<>();
 		
@@ -157,6 +296,12 @@ public class ObjectConstructor {
 		return parsed_data;
 	}
 	
+	/**
+	 * Queries server for and returns the list of all Open-status Entries for the given year.
+	 * @param manager
+	 * @param year
+	 * @return
+	 */
 	public List<Entry> constructOpenEntryForYear(ConnectionManager manager, int year) {
 		List<Entry> parsed_data = new ArrayList<>();
 		
@@ -170,6 +315,12 @@ public class ObjectConstructor {
 		return parsed_data;
 	}
 	
+	/**
+	 * Queries server for and returns the list of all Entries whose client is "TSC" or "Technical Support Center."
+	 * @param manager
+	 * @param year
+	 * @return
+	 */
 	public List<Entry> constructEntryForTSC(ConnectionManager manager, int year) {
 		List<Entry> parsed_data = new ArrayList<>();
 		
@@ -183,6 +334,12 @@ public class ObjectConstructor {
 		return parsed_data;
 	}
 	
+	/**
+	 * Queries server for and returns a summary of supplier activity for the given year.
+	 * @param manager
+	 * @param year
+	 * @return
+	 */
 	public List<List<String>> constructEntryForSupplier(ConnectionManager manager, int year) {
 		
 		String query = String.format("GenerateReportSupplier\f%s\f", year);
@@ -195,6 +352,13 @@ public class ObjectConstructor {
 		return parsed_data;
 	}
 	
+	/**
+	 * Queries server for and returns the Entries involving the given supplier for the given year.
+	 * @param manager
+	 * @param year
+	 * @param supplier
+	 * @return
+	 */
 	public List<Entry> constructEntryForIndividualSupplier(ConnectionManager manager, int year, String supplier) {
 		
 		String query = String.format("GenerateReportIndividualSupplier\f%s\f%s\f", year, supplier);
@@ -206,6 +370,11 @@ public class ObjectConstructor {
 		return parsed_data;
 	}
 	
+	/**
+	 * Queries server for and returns the list of suppliers already existing in the database.
+	 * @param manager
+	 * @return
+	 */
 	public List<String> constructSuppliers(ConnectionManager manager) {
 		manager.connect();
 		String data = manager.send("ViewSuppliers\f");
@@ -214,6 +383,12 @@ public class ObjectConstructor {
 		return parseSuppliers(data);
 	}
 	
+	/**
+	 * Generates an .xls file containing the given year's Entries.
+	 * @param manager
+	 * @param inputYear
+	 * @return
+	 */
 	public byte[] generateReport(ConnectionManager manager, int inputYear) {
 		//gather necessary data
 		manager.connect();
@@ -223,6 +398,12 @@ public class ObjectConstructor {
 		return formatReport(data, inputYear);
 	}
 	
+	/**
+	 * Generates an .xls file containing the given year's Open-status Entries.
+	 * @param manager
+	 * @param inputYear
+	 * @return
+	 */
 	public byte[] generateReportOpen(ConnectionManager manager, int inputYear) {
 		//gather necessary data
 		manager.connect();
@@ -232,6 +413,12 @@ public class ObjectConstructor {
 		return formatReport(data, inputYear);
 	}
 	
+	/**
+	 * Generates an .xls file containing the given year's TSC Entries.
+	 * @param manager
+	 * @param inputYear
+	 * @return
+	 */
 	public byte[] generateReportTSC(ConnectionManager manager, int inputYear) {
 		//gather necessary data
 		manager.connect();
@@ -241,6 +428,12 @@ public class ObjectConstructor {
 		return formatReport(data, inputYear);
 	}
 	
+	/**
+	 * Generates an .xls file containing the given year's Entries with each quarter having its own page.
+	 * @param manager
+	 * @param inputYear
+	 * @return
+	 */
 	public byte[] generateReportQuarter(ConnectionManager manager, int inputYear) {
 		//gather necessary data
 		manager.connect();
@@ -250,6 +443,12 @@ public class ObjectConstructor {
 		return formatReport(data, inputYear);
 	}
 	
+	/**
+	 * Generates an .xls file containing the number of the given year's Entries classified by supplier.
+	 * @param manager
+	 * @param inputYear
+	 * @return
+	 */
 	public byte[] generateReportSupplier(ConnectionManager manager, int inputYear) {
 		manager.connect();
 		List<List<String>> data = constructEntryForSupplier(manager, inputYear);
@@ -258,6 +457,13 @@ public class ObjectConstructor {
 		return formatSupplierReport(data, inputYear);
 	}
 	
+	/**
+	 * Generates an .xls file containing the given year's Entries for the given supplier.
+	 * @param manager
+	 * @param inputYear
+	 * @param supplier
+	 * @return
+	 */
 	public byte[] generateReportIndividualSupplier(ConnectionManager manager, int inputYear, String supplier) {
 		manager.connect();
 		List<List<Entry>> data = classifyByMonth(constructEntryForIndividualSupplier(manager, inputYear, supplier));
@@ -266,6 +472,13 @@ public class ObjectConstructor {
 		return formatReport(data, inputYear);
 	}
 	
+	/**
+	 * Formats the given list of Entry classified per month into a .xls file that resembles the previously used format
+	 * of Logistics.
+	 * @param data
+	 * @param inputYear
+	 * @return
+	 */
 	private byte[] formatReport(List<List<Entry>> data, int inputYear) {
 		//track the longest string in each column
 		List<Integer> maxNumCharacters = new ArrayList<>(NUMBER_OF_COLUMNS);
@@ -647,6 +860,12 @@ public class ObjectConstructor {
 		return bos.toByteArray();
 	}
 	
+	/**
+	 * Formats the given summary of supplier activity.
+	 * @param data
+	 * @param inputYear
+	 * @return
+	 */
 	private byte[] formatSupplierReport(List<List<String>> data, int inputYear) {
 		//function final output stored here
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -756,7 +975,11 @@ public class ObjectConstructor {
 		return bos.toByteArray();
 	}
 	
-
+	/**
+	 * Segregates the list of Entries given into a list of lists of Entries based on their month started.
+	 * @param list
+	 * @return
+	 */
 	private List<List<Entry>> classifyByMonth(List<Entry> list) {
 		List<List<Entry>> result = new ArrayList<>();
 		//holds the input
@@ -789,6 +1012,11 @@ public class ObjectConstructor {
 		return result;
 	}
 	
+	/**
+	 * Segregates the list of Entries given into a list of lists of Entries based on their quarter started.
+	 * @param list
+	 * @return
+	 */
 	private List<List<Entry>> classifyByQuarter(List<Entry> list) {
 		List<List<Entry>> result = new ArrayList<>();
 		//holds the input

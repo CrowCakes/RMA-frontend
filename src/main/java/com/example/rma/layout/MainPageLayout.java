@@ -7,6 +7,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -35,5 +36,9 @@ public class MainPageLayout extends CssLayout implements View {
 			new VerticalLayout(report, reportTSC, reportQuarter, reportSupplier, reportOpen),
 			new VerticalLayout(supplier, reportIndividualSupplier));
 	
-	protected VerticalLayout layout = new VerticalLayout(new HorizontalLayout(filter, refresh, create, openReport, viewOpen), display_grid);
+	protected HorizontalLayout pagination = new HorizontalLayout();
+	protected Label display_count = new Label("");
+	
+	protected VerticalLayout layout = new VerticalLayout(
+			new HorizontalLayout(filter, refresh, create, openReport, viewOpen), display_grid, pagination);
 }

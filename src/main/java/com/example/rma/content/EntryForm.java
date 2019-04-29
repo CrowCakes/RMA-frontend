@@ -17,6 +17,10 @@ public class EntryForm extends EntryFormLayout {
 
     private Binder<Entry> binder = new Binder<>(Entry.class);
 	
+    /**
+     * Prepares the UI elements of the page.
+     * @param parent
+     */
 	public EntryForm(MainPage parent) {
 		this.parent = parent;
 		
@@ -34,6 +38,10 @@ public class EntryForm extends EntryFormLayout {
 		setVisible(false);
 	}
 	
+	/**
+	 * Binds the given Entry for editing on the form.
+	 * @param entry
+	 */
 	public void setEntry(Entry entry) {
 		currentEntry = entry;
 		
@@ -42,6 +50,9 @@ public class EntryForm extends EntryFormLayout {
 		setVisible(true);
 	}
 	
+	/**
+	 * Prepares the UI elements for editing Entries.
+	 */
 	private void bind_fields() {
 		status.setItems("Open", "Closed");
 		trace.setPlaceholder("Leave as 0 if no parent");
@@ -81,6 +92,9 @@ public class EntryForm extends EntryFormLayout {
 		turnaround.setEnabled(false);
 	}
 	
+	/**
+	 * Sets up the functions triggered by the save/cancel/delete buttons.
+	 */
 	private void prepare_buttons() {
 		save.addClickListener(e -> save());
 		cancel.addClickListener(e -> cancel());
@@ -101,6 +115,9 @@ public class EntryForm extends EntryFormLayout {
 		//delete.setEnabled(true);
 	}
 	
+	/**
+	 * Sends entered data to the server to be added/edited into the database.
+	 */
 	private void save() {
 		if (!validate()) {
 			Notification.show("Error", "Please make sure your Quantity, Non-Working Days, Quantity Returned, and Trace# are all digits only", Notification.Type.ERROR_MESSAGE);
@@ -187,11 +204,20 @@ public class EntryForm extends EntryFormLayout {
 		setVisible(false);
 	}
 	
+	/**
+	 * Hides the EntryForm.
+	 */
 	private void cancel() {
 		setVisible(false);
 	}
 	
+	/**
+	 * Sends query to the server for deletion of the current Entry.
+	 * Should not work when EntryID is 0. 
+	 */
 	private void delete() {
+		if (currentEntry.getEntryID() == 0) return;
+		
 		String query = String.format("DeleteEntry\f%s\f", id.getValue());
 		
 		System.out.println("-- Delete Entry --");
@@ -206,11 +232,20 @@ public class EntryForm extends EntryFormLayout {
 		setVisible(false);
 	}
 	
+	/**
+	 * Checks if the given string contains only digits 0 to 9.
+	 * @param s
+	 * @return
+	 */
 	private boolean isDigit(String s) {
 		if (s.matches("[0-9]+")) return true;
 		else return false;
 	}
 	
+	/** 
+	 * Checks if all the given fields contain values that are only digits 0 to 9.
+	 * @return
+	 */
 	private boolean validate() {
 		if (!isDigit(quantity.getValue()) || !isDigit(nonWorkingDays.getValue()) || !isDigit(quantityReturned.getValue())
 				|| !isDigit(trace.getValue())) return false;

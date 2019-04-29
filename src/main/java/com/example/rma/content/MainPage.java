@@ -15,6 +15,7 @@ import com.example.rma.classes.OnDemandFileDownloader;
 import com.example.rma.classes.Entry;
 import com.example.rma.classes.ObjectConstructor;
 import com.vaadin.shared.ui.ValueChangeMode;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
@@ -24,8 +25,20 @@ public class MainPage extends MainPageLayout {
 	private ConnectionManager manager = new ConnectionManager();
 	private ObjectConstructor constructor;
 	
+	//Entry editing form
 	private EntryForm entryForm;
 	
+	//Page variables
+	int count = 0;
+	int MAX_LIMIT = 20;
+	int limit = MAX_LIMIT;
+	int offset = 0;
+	
+	/**
+	 * Prepares the UI elements of the page.
+	 * @param user
+	 * @param constructor
+	 */
 	public MainPage(String user, ObjectConstructor constructor) {
 		this.constructor = constructor;
 
@@ -33,7 +46,7 @@ public class MainPage extends MainPageLayout {
 			entryForm = new EntryForm(this);
 			layout.addComponent(entryForm);
 		}
-		
+		preparePagination();
 		prepareGrid(user);
 		prepareButton();
 		preparePanel();
@@ -42,6 +55,36 @@ public class MainPage extends MainPageLayout {
 
 	}
 	
+	/**
+	 * Prepares the buttons needed to paginate database data
+	 */
+	private void preparePagination() {
+		Button previous = new Button(String.format("Previous %d", MAX_LIMIT)); 
+		Button next = new Button(String.format("Next %d", MAX_LIMIT));
+		
+		previous.addClickListener(e -> {
+        	offset = (offset - limit < 0) ? 0 : offset - limit;
+        	limit = (offset + limit > count) ? count - offset : limit;
+        	displayNew(offset, limit);
+        	
+        	display_count.setValue(String.format("%d-%d of %d", offset, offset+limit, count));
+        	limit = MAX_LIMIT;
+        });
+		next.addClickListener(e -> {
+        	offset = (offset + limit > count) ? offset : offset + limit;
+        	limit = (offset + limit > count) ? count - offset : limit;
+        	displayNew(offset, limit);
+        	
+        	display_count.setValue(String.format("%d-%d of %d", offset, offset+limit, count));
+        	limit = MAX_LIMIT;
+        });
+		
+		pagination.addComponents(previous, display_count, next);
+	}
+	
+	/**
+	 * Prepares the actions triggered by pressing the various buttons on the page
+	 */
 	private void prepareButton() {
 		refresh.addClickListener(e -> {
 			refreshView();
@@ -247,12 +290,20 @@ public class MainPage extends MainPageLayout {
          downloaderIndividualSupplier.extend(reportIndividualSupplier);
 	}
 	
+	/**
+	 * Prepares the filter functionality and the display grid's appearance and columns.
+	 * Also prepares grid interaction with EntryForm.
+	 * @param user
+	 */
 	private void prepareGrid(String user) {
 		filter.setPlaceholder("Search RTS# or Supplier name");
-		filter.addValueChangeListener(e -> filterView());
+		filter.addValueChangeListener(e -> {
+			if (!filter.getValue().isEmpty()) filterView();
+			else refreshView();
+		});
 		filter.setValueChangeMode(ValueChangeMode.LAZY);
 		
-		display_grid.setHeight("250px");
+		display_grid.setHeight("200px");
 		display_grid.setWidth("1125px");
 		display_grid.setSelectionMode(Grid.SelectionMode.SINGLE);
 		
@@ -283,6 +334,9 @@ public class MainPage extends MainPageLayout {
         }
 	}
 	
+	/**
+	 * Prepares the report generation component and all UI elements within it.
+	 */
 	private void preparePanel() {
 		year.setPlaceholder("Example: 2018");
 		disableReportButtons();
@@ -309,12 +363,19 @@ public class MainPage extends MainPageLayout {
 		layout.addComponent(generateReport);
 	}
 	
+	/**
+	 * Prepares a blank list to be inserted into display grid. For debug purposes only.
+	 */
 	private void testGrid() {
 		List<Entry> test = new ArrayList<>();
 		test.add(emptyEntry());
 		display_grid.setItems(test);
 	}
 	
+	/**
+	 * Returns a dummy Entry. To be used as the bean for Add New Entry.
+	 * @return
+	 */
 	private Entry emptyEntry() {
 		return new Entry(0, "", "", "", new Date(DateTime.now().getMillis()), "", "",
 				"", new Date(DateTime.now().getMillis()), 0, "", new Date(DateTime.now().getMillis()), new Date(DateTime.now().getMillis()),
@@ -322,22 +383,55 @@ public class MainPage extends MainPageLayout {
 				"", "", "", 0, "", "", 0);
 	}
 	
+	/**
+	 * Refreshes the display grid with the latest set of Entries from the server.
+	 * Returns user to Entries 0-20.
+	 */
 	public void refreshView() {
 		display_grid.deselectAll();
+		offset = 0;
+		
+		manager.connect();
+		count = constructor.getEntryCount(manager);
+		manager.disconnect();
+		
+		limit = (offset + limit > count) ? count - offset : limit;
 		
 		//System.out.println("-- Refresh --");
 		manager.connect();
-		List<Entry> update = constructor.constructEntry(manager);
+		List<Entry> update = constructor.constructEntry(manager, offset, limit);
 		manager.disconnect();
 		
 		List<String> updateSuppliers = constructor.constructSuppliers(manager);
 		
 		display_grid.setItems(update);
+		display_count.setValue(String.format("%d-%d of %d", offset, offset+limit, count));
 		supplier.setItems(updateSuppliers);
+		
+		limit = MAX_LIMIT;
 		
 		//testGrid();
 	}
 	
+	/**
+	 * Displays the next/previous page of Entries.
+	 * @param offset
+	 * @param limit
+	 */
+	private void displayNew(int offset, int limit) {
+		display_grid.deselectAll();
+		
+		//System.out.println("-- Refresh --");
+		manager.connect();
+		List<Entry> update = constructor.constructEntry(manager, offset, limit);
+		manager.disconnect();
+		
+		display_grid.setItems(update);
+	}
+	
+	/**
+	 * Refreshes the display grid with the latest set of Open-status Entries from the server.
+	 */
 	public void viewOpenEntries() {
 		display_grid.deselectAll();
 		
@@ -351,6 +445,9 @@ public class MainPage extends MainPageLayout {
 		//testGrid();
 	}
 	
+	/**
+	 * Refreshes the display grid with the latest set of input-matched Entries from the server.
+	 */
 	private void filterView() {
 		display_grid.deselectAll();
 		
@@ -362,6 +459,9 @@ public class MainPage extends MainPageLayout {
 		display_grid.setItems(update);
 	}
 	
+	/**
+	 * Sets all the report generation buttons to Enabled.
+	 */
 	private void enableReportButtons() {
 		report.setEnabled(true);
 		reportTSC.setEnabled(true);
@@ -371,6 +471,9 @@ public class MainPage extends MainPageLayout {
 		supplier.setEnabled(true);
 	}
 	
+	/**
+	 * Sets all the report generation buttons to be Disabled.
+	 */
 	private void disableReportButtons() {
 		report.setEnabled(false);
 		reportTSC.setEnabled(false);
@@ -381,6 +484,9 @@ public class MainPage extends MainPageLayout {
 		reportIndividualSupplier.setEnabled(false);
 	}
 
+	/**
+	 * Checks if the given String contains only digits 0 to 9.
+	 */
 	private boolean isDigit(String s) {
 		if (s.matches("[0-9]+")) return true;
 		else return false;
