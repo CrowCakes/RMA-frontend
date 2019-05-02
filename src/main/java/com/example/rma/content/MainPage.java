@@ -296,6 +296,8 @@ public class MainPage extends MainPageLayout {
 	 * @param user
 	 */
 	private void prepareGrid(String user) {
+		grid_view.setMargin(false);
+		
 		filter.setPlaceholder("Search RTS# or Supplier name");
 		filter.addValueChangeListener(e -> {
 			if (!filter.getValue().isEmpty()) filterView();
@@ -303,7 +305,7 @@ public class MainPage extends MainPageLayout {
 		});
 		filter.setValueChangeMode(ValueChangeMode.LAZY);
 		
-		display_grid.setHeight("200px");
+		display_grid.setHeight("500px");
 		display_grid.setWidth("1125px");
 		display_grid.setSelectionMode(Grid.SelectionMode.SINGLE);
 		
@@ -326,8 +328,10 @@ public class MainPage extends MainPageLayout {
         if (user.equals("Admin")) {
             this.display_grid.asSingleSelect().addValueChangeListener(event -> {
                 if (event.getValue() == null) {
+                	grid_view.setVisible(true);
                 	entryForm.setVisible(false);
                 } else {
+                	grid_view.setVisible(false);
                 	entryForm.setEntry(event.getValue());
                 }
             });
@@ -409,7 +413,6 @@ public class MainPage extends MainPageLayout {
 		supplier.setItems(updateSuppliers);
 		
 		limit = MAX_LIMIT;
-		
 		//testGrid();
 	}
 	
@@ -484,6 +487,10 @@ public class MainPage extends MainPageLayout {
 		reportIndividualSupplier.setEnabled(false);
 	}
 
+	public void revealGrid() {
+		grid_view.setVisible(true);
+	}
+	
 	/**
 	 * Checks if the given String contains only digits 0 to 9.
 	 */

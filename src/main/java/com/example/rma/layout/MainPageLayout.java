@@ -39,6 +39,7 @@ public class MainPageLayout extends CssLayout implements View {
 	protected HorizontalLayout pagination = new HorizontalLayout();
 	protected Label display_count = new Label("");
 	
-	protected VerticalLayout layout = new VerticalLayout(
+	protected VerticalLayout grid_view = new VerticalLayout(
 			new HorizontalLayout(filter, refresh, create, openReport, viewOpen), display_grid, pagination);
+	protected VerticalLayout layout = new VerticalLayout(grid_view);
 }

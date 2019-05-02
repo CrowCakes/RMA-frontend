@@ -28,8 +28,8 @@ public class EntryForm extends EntryFormLayout {
 		prepare_buttons();
 		
 		layout.setSizeUndefined();
-		setHeight("300px");
-		setWidth("1125px");
+		setHeight("600px");
+		setWidth("1150px");
 		setContent(layout);
 		
 		this.save.setStyleName("primary");
@@ -201,6 +201,7 @@ public class EntryForm extends EntryFormLayout {
 		}
 		
 		parent.refreshView();
+		parent.revealGrid();
 		setVisible(false);
 	}
 	
@@ -208,6 +209,7 @@ public class EntryForm extends EntryFormLayout {
 	 * Hides the EntryForm.
 	 */
 	private void cancel() {
+		parent.revealGrid();
 		setVisible(false);
 	}
 	
@@ -229,6 +231,7 @@ public class EntryForm extends EntryFormLayout {
 		Notification.show("Delete Entry", result, Notification.Type.HUMANIZED_MESSAGE);
 		
 		parent.refreshView();
+		parent.revealGrid();
 		setVisible(false);
 	}
 	

@@ -3,11 +3,13 @@ package com.example.rma.layout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.VerticalSplitPanel;
 
 public class EntryFormLayout extends Panel {
 	protected TextField id = new TextField("Entry#");
@@ -44,17 +46,22 @@ public class EntryFormLayout extends Panel {
 	
 	protected HorizontalLayout fields = new HorizontalLayout(id, trace);
 	protected HorizontalLayout fields1 = new HorizontalLayout(supplier,
-			so, client, rts, description,
+			so, client);
+	protected HorizontalLayout fields2 = new HorizontalLayout(rts, description,
 			serial, quantity);
-	protected HorizontalLayout fields2 = new HorizontalLayout(problem, nonWorkingDays,
-			turnaround, quantityRemaining, pos, rtc, quantityReturned);
-	protected HorizontalLayout fields3 = new HorizontalLayout(newSerial, supplierPOS, supplierReturned);
+	protected HorizontalLayout fields3 = new HorizontalLayout(problem, nonWorkingDays,
+			turnaround);
+	protected HorizontalLayout fields4 = new HorizontalLayout(quantityRemaining, pos, rtc, quantityReturned);
+	protected HorizontalLayout fields5 = new HorizontalLayout(newSerial, supplierPOS, supplierReturned);
 	protected HorizontalLayout dates = new HorizontalLayout(receiveDate, reportDate,
 			pullOutDate, returnDate, status);
 	
 	protected HorizontalLayout buttons = new HorizontalLayout(save, cancel, delete);
 
-	protected VerticalLayout layout = new VerticalLayout(fields, fields1, fields2, fields3, dates, 
-			remarks,
+	protected VerticalLayout layout = new VerticalLayout(fields, 
+			fields1, fields2, new Label(""),
+			fields3, fields4, fields5, new Label(""),
+			dates, 
+			remarks, 
 			buttons);
 }
