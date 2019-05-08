@@ -98,7 +98,7 @@ public class MainPage extends MainPageLayout {
 		});
 		
 		create.addClickListener(e -> {
-			generateReport.setVisible(false);
+			grid_view.setVisible(false);
 			entryForm.setEntry(emptyEntry());
 		});
 		
