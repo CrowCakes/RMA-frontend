@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -452,11 +453,19 @@ public class MainPage extends MainPageLayout {
 	 * Refreshes the display grid with the latest set of input-matched Entries from the server.
 	 */
 	private void filterView() {
+		List<String> foo = Arrays.asList(filter.getValue().split("\\s*/\\s*"));
+		foo.replaceAll(string -> {
+			String temp = String.format(".*%s.*", string);
+			return temp;
+		});
+		String parameter = String.join("|", foo);
+		
 		display_grid.deselectAll();
 		
-		//System.out.println("-- Filter --");
+		System.out.println("-- Filter --");
+		System.out.println(parameter);
 		manager.connect();
-		List<Entry> update = constructor.filterEntry(manager, filter.getValue());
+		List<Entry> update = constructor.filterEntry(manager, parameter);
 		manager.disconnect();
 		
 		display_grid.setItems(update);
