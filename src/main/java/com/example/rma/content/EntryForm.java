@@ -1,17 +1,21 @@
 package com.example.rma.content;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.example.rma.classes.ConnectionManager;
 import com.example.rma.classes.Entry;
+import com.example.rma.classes.ObjectConstructor;
 import com.example.rma.layout.EntryFormLayout;
 import com.vaadin.data.Binder;
 import com.vaadin.ui.Notification;
 
 public class EntryForm extends EntryFormLayout {
 	private ConnectionManager manager = new ConnectionManager();
+	private ObjectConstructor constructor = new ObjectConstructor();
 	private Entry currentEntry;
 	private MainPage parent;
 
@@ -127,6 +131,8 @@ public class EntryForm extends EntryFormLayout {
 		//if entryID is 0, make a new entry
 		if (currentEntry.getEntryID() == 0) {
 			//22 fields
+			
+			/*
 			String query = String.format(
 					"InsertNewEntry\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f", 
 					supplier.getValue(),
@@ -151,9 +157,38 @@ public class EntryForm extends EntryFormLayout {
 							Integer.parseInt(quantityReturned.getValue()) == 0) ? "Closed" : "Open",
 					supplierPOS.getValue(),
 					supplierReturned.getValue(),
-					trace.getValue());
-
-			System.out.println("-- Create Entry --");
+					trace.getValue());*/
+			
+			List<String> parameters = new ArrayList<>();
+			parameters.add(supplier.getValue());
+			parameters.add(so.getValue());
+			parameters.add(client.getValue());
+			parameters.add(String.valueOf(Date.valueOf(receiveDate.getValue())));
+			parameters.add(rts.getValue());
+			parameters.add(description.getValue());
+			parameters.add(serial.getValue());
+			parameters.add(String.valueOf(Date.valueOf(reportDate.getValue())));
+			parameters.add(String.valueOf(quantity.getValue()));
+			parameters.add(String.valueOf(problem.getValue()));
+			parameters.add(String.valueOf(Date.valueOf(pullOutDate.getValue())));
+			parameters.add(String.valueOf(Date.valueOf(returnDate.getValue())));
+			parameters.add(nonWorkingDays.getValue());
+			parameters.add(pos.getValue());
+			parameters.add(rtc.getValue());
+			parameters.add(quantityReturned.getValue());
+			parameters.add(newSerial.getValue());
+			parameters.add(remarks.getValue());
+			parameters.add(
+					(String)((Integer.parseInt(quantity.getValue()) - 
+					Integer.parseInt(quantityReturned.getValue()) == 0) ? "Closed" : "Open")
+					);
+			parameters.add(supplierPOS.getValue());
+			parameters.add(supplierReturned.getValue());
+			parameters.add(trace.getValue());
+			
+			String query = constructor.constructMessage("InsertNewEntry", 
+					parameters
+			);
 			
 			manager.connect();
 			String result = manager.send(query);
@@ -165,6 +200,8 @@ public class EntryForm extends EntryFormLayout {
 		//if it is not 0, then edit an existing entry
 		else {
 			//22+1 fields
+			
+			/*
 			String query = String.format(
 					"EditEntry\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f%s\f", 
 					currentEntry.getEntryID(),
@@ -190,9 +227,41 @@ public class EntryForm extends EntryFormLayout {
 							Integer.parseInt(quantityReturned.getValue()) == 0) ? "Closed" : "Open",
 					supplierPOS.getValue(),
 					supplierReturned.getValue(),
-					trace.getValue());
+					trace.getValue());*/
 			
-			System.out.println("-- Edit Entry --");
+			List<String> parameters = new ArrayList<>();
+			parameters.add(String.valueOf(currentEntry.getEntryID()));
+			parameters.add(supplier.getValue());
+			parameters.add(so.getValue());
+			parameters.add(client.getValue());
+			parameters.add(String.valueOf(Date.valueOf(receiveDate.getValue())));
+			parameters.add(rts.getValue());
+			parameters.add(description.getValue());
+			parameters.add(serial.getValue());
+			parameters.add(String.valueOf(Date.valueOf(reportDate.getValue())));
+			parameters.add(String.valueOf(quantity.getValue()));
+			parameters.add(String.valueOf(problem.getValue()));
+			parameters.add(String.valueOf(Date.valueOf(pullOutDate.getValue())));
+			parameters.add(String.valueOf(Date.valueOf(returnDate.getValue())));
+			parameters.add(nonWorkingDays.getValue());
+			parameters.add(pos.getValue());
+			parameters.add(rtc.getValue());
+			parameters.add(quantityReturned.getValue());
+			parameters.add(newSerial.getValue());
+			parameters.add(remarks.getValue());
+			parameters.add(
+					(String)((Integer.parseInt(quantity.getValue()) - 
+					Integer.parseInt(quantityReturned.getValue()) == 0) ? "Closed" : "Open")
+					);
+			parameters.add(supplierPOS.getValue());
+			parameters.add(supplierReturned.getValue());
+			parameters.add(trace.getValue());
+			
+			
+			String query = constructor.constructMessage("EditEntry", 
+					parameters
+			);
+			
 			manager.connect();
 			String result = manager.send(query);
 			manager.disconnect();
