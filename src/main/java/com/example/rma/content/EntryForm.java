@@ -70,6 +70,8 @@ public class EntryForm extends EntryFormLayout {
 		this.binder.bind(serial, Entry::getSerial, Entry::setSerial);
 		this.binder.bind(quantity, Entry::getQuantityStr, Entry::setQuantity);
 		this.binder.bind(problem, Entry::getProblem, Entry::setProblem);
+		this.binder.bind(reportedby, Entry::getReportedBy, Entry::setReportedBy);
+		this.binder.bind(testedby, Entry::getTestedBy, Entry::setTestedBy);
 		this.binder.bind(nonWorkingDays, Entry::getNonWorkingDaysStr, Entry::setNonWorkingDays);
 		this.binder.bind(turnaround, Entry::getTurnaroundStr, Entry::setTurnaround);
 		this.binder.bind(quantityRemaining, Entry::getQuantityRemainingStr, Entry::setQuantityRemaining);
@@ -170,6 +172,8 @@ public class EntryForm extends EntryFormLayout {
 			parameters.add(String.valueOf(Date.valueOf(reportDate.getValue())));
 			parameters.add(String.valueOf(quantity.getValue()));
 			parameters.add(String.valueOf(problem.getValue()));
+			parameters.add(String.valueOf(reportedby.getValue()));
+			parameters.add(String.valueOf(testedby.getValue()));
 			parameters.add(String.valueOf(Date.valueOf(pullOutDate.getValue())));
 			parameters.add(String.valueOf(Date.valueOf(returnDate.getValue())));
 			parameters.add(nonWorkingDays.getValue());
@@ -241,6 +245,8 @@ public class EntryForm extends EntryFormLayout {
 			parameters.add(String.valueOf(Date.valueOf(reportDate.getValue())));
 			parameters.add(String.valueOf(quantity.getValue()));
 			parameters.add(String.valueOf(problem.getValue()));
+			parameters.add(String.valueOf(reportedby.getValue()));
+			parameters.add(String.valueOf(testedby.getValue()));
 			parameters.add(String.valueOf(Date.valueOf(pullOutDate.getValue())));
 			parameters.add(String.valueOf(Date.valueOf(returnDate.getValue())));
 			parameters.add(nonWorkingDays.getValue());

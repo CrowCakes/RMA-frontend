@@ -21,6 +21,8 @@ public class EntryFormLayout extends Panel {
 	protected TextField serial = new TextField("Serial#");
 	protected TextField quantity = new TextField("Quantity");
 	protected TextField problem = new TextField("Problem");
+	protected TextField reportedby = new TextField("Reported By");
+	protected TextField testedby = new TextField("Tested By");
 	protected TextField nonWorkingDays = new TextField("# of non-working days");
 	protected TextField turnaround = new TextField("Turnaround (in days)");
 	protected TextField quantityRemaining = new TextField("Qty Remaining");
@@ -49,7 +51,7 @@ public class EntryFormLayout extends Panel {
 			so, client);
 	protected HorizontalLayout fields2 = new HorizontalLayout(rts, description,
 			serial, quantity);
-	protected HorizontalLayout fields3 = new HorizontalLayout(problem, nonWorkingDays,
+	protected HorizontalLayout fields3 = new HorizontalLayout(problem, reportedby, testedby, nonWorkingDays,
 			turnaround);
 	protected HorizontalLayout fields4 = new HorizontalLayout(quantityRemaining, pos, rtc, quantityReturned);
 	protected HorizontalLayout fields5 = new HorizontalLayout(newSerial, supplierPOS, supplierReturned);

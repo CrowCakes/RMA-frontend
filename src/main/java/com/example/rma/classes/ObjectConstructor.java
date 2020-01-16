@@ -20,7 +20,7 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 
 public class ObjectConstructor {
-	private int NUMBER_OF_COLUMNS = 26;
+	private int NUMBER_OF_COLUMNS = 28;
 	
 	/**
 	 * Returns the number of Entries represented in the passed String.
@@ -72,21 +72,23 @@ public class ObjectConstructor {
 					Date.valueOf(foobar.get(8)), 
 					Integer.parseInt(foobar.get(9)), 
 					foobar.get(10), 
-					Date.valueOf(foobar.get(11)), 
-					Date.valueOf(foobar.get(12)),
-					Integer.valueOf(foobar.get(13)), 
-					Integer.valueOf(foobar.get(14)), 
-					foobar.get(15),
-					foobar.get(16), 
-					Integer.parseInt(foobar.get(17)),
-					Integer.parseInt(foobar.get(18)),
-					foobar.get(19), 
-					foobar.get(20), 
+					foobar.get(11),
+					foobar.get(12),
+					Date.valueOf(foobar.get(13)), 
+					Date.valueOf(foobar.get(14)),
+					Integer.valueOf(foobar.get(15)), 
+					Integer.valueOf(foobar.get(16)), 
+					foobar.get(17),
+					foobar.get(18), 
+					Integer.parseInt(foobar.get(19)),
+					Integer.parseInt(foobar.get(20)),
 					foobar.get(21), 
-					Integer.parseInt(foobar.get(22)),
-					foobar.get(23),
-					foobar.get(24),
-					Integer.parseInt(foobar.get(25))
+					foobar.get(22), 
+					foobar.get(23), 
+					Integer.parseInt(foobar.get(24)),
+					foobar.get(25),
+					foobar.get(26),
+					Integer.parseInt(foobar.get(27))
 					));
 		}
 		
@@ -137,21 +139,23 @@ public class ObjectConstructor {
 					Date.valueOf(foobar.get(8)), 
 					Integer.parseInt(foobar.get(9)), 
 					foobar.get(10), 
-					Date.valueOf(foobar.get(11)), 
-					Date.valueOf(foobar.get(12)),
-					Integer.valueOf(foobar.get(13)), 
-					Integer.valueOf(foobar.get(14)), 
-					foobar.get(15),
-					foobar.get(16), 
-					Integer.parseInt(foobar.get(17)),
-					Integer.parseInt(foobar.get(18)),
-					foobar.get(19), 
-					foobar.get(20), 
+					foobar.get(11),
+					foobar.get(12),
+					Date.valueOf(foobar.get(13)), 
+					Date.valueOf(foobar.get(14)),
+					Integer.valueOf(foobar.get(15)), 
+					Integer.valueOf(foobar.get(16)), 
+					foobar.get(17),
+					foobar.get(18), 
+					Integer.parseInt(foobar.get(19)),
+					Integer.parseInt(foobar.get(20)),
 					foobar.get(21), 
-					Integer.parseInt(foobar.get(22)),
-					foobar.get(23),
-					foobar.get(24),
-					Integer.parseInt(foobar.get(25))
+					foobar.get(22), 
+					foobar.get(23), 
+					Integer.parseInt(foobar.get(24)),
+					foobar.get(25),
+					foobar.get(26),
+					Integer.parseInt(foobar.get(27))
 					));
 		}
 		
@@ -244,6 +248,11 @@ public class ObjectConstructor {
 		return entryCount(query);
 	}
 	
+	public int getTSCCount(ConnectionManager manager) {
+		String query = manager.send("ViewTSCEntries\f");
+		return entryCount(query);
+	}
+	
 	/**
 	 * Queries server for and returns the list of all Open-status Entries.
 	 * @param manager
@@ -255,6 +264,21 @@ public class ObjectConstructor {
 		String query = manager.send("ViewOpenEntries\f");
 		
 		parsed_data = parseEntry(query);
+		
+		return parsed_data;
+	}
+	
+	/**
+	 * Queries server for and returns the list of all Open-status Entries that have been open for more than 7 days.
+	 * @param manager
+	 * @return
+	 */
+	public List<Entry> constructTSCEntry(ConnectionManager manager, int offset, int limit) {
+		List<Entry> parsed_data = new ArrayList<>();
+		
+		String query = manager.send("ViewTSCEntries\f");
+		
+		parsed_data = parseEntry(query, offset, limit);
 		
 		return parsed_data;
 	}
@@ -588,53 +612,59 @@ public class ObjectConstructor {
 
 			cell = row.createCell(9);
 			cell.setCellValue("Problem");
-
+			
 			cell = row.createCell(10);
-			cell.setCellValue("Date Pulled Out");
-
+			cell.setCellValue("Reported By");
+			
 			cell = row.createCell(11);
-			cell.setCellValue("Date Returned");
+			cell.setCellValue("Tested By");
 
 			cell = row.createCell(12);
-			cell.setCellValue("Non-Working Days");
+			cell.setCellValue("Date Pulled Out");
 
 			cell = row.createCell(13);
-			cell.setCellValue("Days for Turnaround");
+			cell.setCellValue("Date Returned");
 
 			cell = row.createCell(14);
-			cell.setCellValue("Quantity Remaining");
+			cell.setCellValue("Non-Working Days");
 
 			cell = row.createCell(15);
-			cell.setCellValue("POS Ref.");
+			cell.setCellValue("Days for Turnaround");
 
 			cell = row.createCell(16);
-			cell.setCellValue("RTC Ref.");
+			cell.setCellValue("Quantity Remaining");
 
 			cell = row.createCell(17);
-			cell.setCellValue("Quantity Returned");
+			cell.setCellValue("POS Ref.");
 
 			cell = row.createCell(18);
-			cell.setCellValue("New Serial#");
+			cell.setCellValue("RTC Ref.");
 
 			cell = row.createCell(19);
-			cell.setCellValue("Remarks");
+			cell.setCellValue("Quantity Returned");
 
 			cell = row.createCell(20);
+			cell.setCellValue("New Serial#");
+
+			cell = row.createCell(21);
+			cell.setCellValue("Remarks");
+
+			cell = row.createCell(22);
 			cell.setCellValue("Status");
 			
-			cell = row.createCell(21);
+			cell = row.createCell(23);
 			cell.setCellValue("For Supplier Reference: Pull-out Slip");
 			
-			cell = row.createCell(22);
+			cell = row.createCell(24);
 			cell.setCellValue("For Supplier Reference: Return Slip");
 
-			cell = row.createCell(23);
+			cell = row.createCell(25);
 			cell.setCellValue("Aging");
 
-			cell = row.createCell(24);
+			cell = row.createCell(26);
 			cell.setCellValue("Entry ID#");
 
-			cell = row.createCell(25);
+			cell = row.createCell(27);
 			cell.setCellValue("Parent ID#");
 
 			for (int i = 0; i<NUMBER_OF_COLUMNS; i++) {
@@ -720,101 +750,115 @@ public class ObjectConstructor {
 						(dataRow.getProblem().length() > maxNumCharacters.get(9)) ? 
 								dataRow.getProblem().length() : maxNumCharacters.get(9)
 						);
-
+				
 				cell = row.createCell(10);
-				cell.setCellValue(dataRow.getPullOutDate().toString());
+				cell.setCellValue(dataRow.getReportedBy());
 				maxNumCharacters.set(10, 
-						(dataRow.getPullOutDate().toString().length() > maxNumCharacters.get(10)) ? 
-								dataRow.getPullOutDate().toString().length() : maxNumCharacters.get(10)
+						(dataRow.getReportedBy().length() > maxNumCharacters.get(10)) ? 
+								dataRow.getReportedBy().length() : maxNumCharacters.get(10)
 						);
-
+				
 				cell = row.createCell(11);
-				cell.setCellValue(dataRow.getReturnDate().toString());
+				cell.setCellValue(dataRow.getTestedBy());
 				maxNumCharacters.set(11, 
-						(dataRow.getReturnDate().toString().length() > maxNumCharacters.get(11)) ? 
-								dataRow.getReturnDate().toString().length() : maxNumCharacters.get(11)
+						(dataRow.getTestedBy().length() > maxNumCharacters.get(11)) ? 
+								dataRow.getTestedBy().length() : maxNumCharacters.get(11)
 						);
 
 				cell = row.createCell(12);
-				cell.setCellValue(dataRow.getNonWorkingDays());
+				cell.setCellValue(dataRow.getPullOutDate().toString());
 				maxNumCharacters.set(12, 
-						(dataRow.getNonWorkingDaysStr().length() > maxNumCharacters.get(12)) ? 
-								dataRow.getNonWorkingDaysStr().length() : maxNumCharacters.get(12)
+						(dataRow.getPullOutDate().toString().length() > maxNumCharacters.get(12)) ? 
+								dataRow.getPullOutDate().toString().length() : maxNumCharacters.get(12)
 						);
 
 				cell = row.createCell(13);
-				cell.setCellValue(dataRow.getTurnaround());
+				cell.setCellValue(dataRow.getReturnDate().toString());
 				maxNumCharacters.set(13, 
-						(dataRow.getTurnaroundStr().length() > maxNumCharacters.get(13)) ? 
-								dataRow.getTurnaroundStr().length() : maxNumCharacters.get(13)
+						(dataRow.getReturnDate().toString().length() > maxNumCharacters.get(13)) ? 
+								dataRow.getReturnDate().toString().length() : maxNumCharacters.get(13)
 						);
 
 				cell = row.createCell(14);
-				cell.setCellValue(dataRow.getQuantityRemaining());
+				cell.setCellValue(dataRow.getNonWorkingDays());
 				maxNumCharacters.set(14, 
-						(dataRow.getQuantityRemainingStr().length() > maxNumCharacters.get(14)) ? 
-								dataRow.getQuantityRemainingStr().length() : maxNumCharacters.get(14)
+						(dataRow.getNonWorkingDaysStr().length() > maxNumCharacters.get(14)) ? 
+								dataRow.getNonWorkingDaysStr().length() : maxNumCharacters.get(14)
 						);
 
 				cell = row.createCell(15);
-				cell.setCellValue(dataRow.getPos());
+				cell.setCellValue(dataRow.getTurnaround());
 				maxNumCharacters.set(15, 
-						(dataRow.getPos().length() > maxNumCharacters.get(15)) ? 
-								dataRow.getPos().length() : maxNumCharacters.get(15)
+						(dataRow.getTurnaroundStr().length() > maxNumCharacters.get(15)) ? 
+								dataRow.getTurnaroundStr().length() : maxNumCharacters.get(15)
 						);
 
 				cell = row.createCell(16);
-				cell.setCellValue(dataRow.getRtc());
+				cell.setCellValue(dataRow.getQuantityRemaining());
 				maxNumCharacters.set(16, 
-						(dataRow.getRtc().length() > maxNumCharacters.get(16)) ? 
-								dataRow.getRtc().length() : maxNumCharacters.get(16)
+						(dataRow.getQuantityRemainingStr().length() > maxNumCharacters.get(16)) ? 
+								dataRow.getQuantityRemainingStr().length() : maxNumCharacters.get(16)
 						);
 
 				cell = row.createCell(17);
-				cell.setCellValue(dataRow.getQuantityReturned());
+				cell.setCellValue(dataRow.getPos());
 				maxNumCharacters.set(17, 
-						(dataRow.getQuantityReturnedStr().length() > maxNumCharacters.get(17)) ? 
-								dataRow.getQuantityReturnedStr().length() : maxNumCharacters.get(17)
+						(dataRow.getPos().length() > maxNumCharacters.get(17)) ? 
+								dataRow.getPos().length() : maxNumCharacters.get(17)
 						);
 
 				cell = row.createCell(18);
-				cell.setCellValue(dataRow.getNewSerial());
+				cell.setCellValue(dataRow.getRtc());
 				maxNumCharacters.set(18, 
-						(dataRow.getNewSerial().length() > maxNumCharacters.get(18)) ? 
-								dataRow.getNewSerial().length() : maxNumCharacters.get(18)
+						(dataRow.getRtc().length() > maxNumCharacters.get(18)) ? 
+								dataRow.getRtc().length() : maxNumCharacters.get(18)
 						);
 
 				cell = row.createCell(19);
-				cell.setCellValue(dataRow.getRemarks());
+				cell.setCellValue(dataRow.getQuantityReturned());
 				maxNumCharacters.set(19, 
-						(dataRow.getRemarks().length() > maxNumCharacters.get(19)) ? 
-								dataRow.getRemarks().length() : maxNumCharacters.get(19)
+						(dataRow.getQuantityReturnedStr().length() > maxNumCharacters.get(19)) ? 
+								dataRow.getQuantityReturnedStr().length() : maxNumCharacters.get(19)
 						);
 
 				cell = row.createCell(20);
-				cell.setCellValue(dataRow.getStatus());
+				cell.setCellValue(dataRow.getNewSerial());
 				maxNumCharacters.set(20, 
-						(dataRow.getStatus().length() > maxNumCharacters.get(20)) ? 
-								dataRow.getStatus().length() : maxNumCharacters.get(20)
+						(dataRow.getNewSerial().length() > maxNumCharacters.get(20)) ? 
+								dataRow.getNewSerial().length() : maxNumCharacters.get(20)
 						);
 
 				cell = row.createCell(21);
-				cell.setCellValue(dataRow.getSupplierPOS());
-				
-				cell = row.createCell(22);
-				cell.setCellValue(dataRow.getSupplierReturned());
-				
-				cell = row.createCell(23);
-				cell.setCellValue(dataRow.getAging());
-				maxNumCharacters.set(22, 
-						(String.valueOf(dataRow.getAging()).length() > maxNumCharacters.get(21)) ? 
-								String.valueOf(dataRow.getAging()).length() : maxNumCharacters.get(21)
+				cell.setCellValue(dataRow.getRemarks());
+				maxNumCharacters.set(21, 
+						(dataRow.getRemarks().length() > maxNumCharacters.get(21)) ? 
+								dataRow.getRemarks().length() : maxNumCharacters.get(21)
 						);
 
+				cell = row.createCell(22);
+				cell.setCellValue(dataRow.getStatus());
+				maxNumCharacters.set(22, 
+						(dataRow.getStatus().length() > maxNumCharacters.get(22)) ? 
+								dataRow.getStatus().length() : maxNumCharacters.get(22)
+						);
+
+				cell = row.createCell(23);
+				cell.setCellValue(dataRow.getSupplierPOS());
+				
 				cell = row.createCell(24);
+				cell.setCellValue(dataRow.getSupplierReturned());
+				
+				cell = row.createCell(25);
+				cell.setCellValue(dataRow.getAging());
+				maxNumCharacters.set(25, 
+						(String.valueOf(dataRow.getAging()).length() > maxNumCharacters.get(25)) ? 
+								String.valueOf(dataRow.getAging()).length() : maxNumCharacters.get(25)
+						);
+
+				cell = row.createCell(26);
 				cell.setCellValue(dataRow.getEntryID());
 
-				cell = row.createCell(25);
+				cell = row.createCell(27);
 				cell.setCellValue(dataRow.getTrace());
 
 				if (i > 0) {

@@ -10,6 +10,7 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 
+import com.example.rma.access.CurrentUser;
 import com.example.rma.classes.ConnectionManager;
 import com.example.rma.layout.MainPageLayout;
 import com.example.rma.classes.OnDemandFileDownloader;
@@ -93,10 +94,17 @@ public class MainPage extends MainPageLayout {
 		}
 		);
 		
-		viewOpen.addClickListener(e -> {
-			viewOpenEntries();
-			generateReport.setVisible(false);
-		});
+		if (CurrentUser.getId().equals("LOG")) 
+		{
+			viewOpen.addClickListener(e -> {
+				viewOpenEntries();
+				generateReport.setVisible(false);
+			});
+		}
+		else if (CurrentUser.getId().equals("TSC")) {
+			viewOpen.setEnabled(false);
+			viewOpen.setVisible(false);
+		}
 		
 		create.addClickListener(e -> {
 			grid_view.setVisible(false);
@@ -319,6 +327,8 @@ public class MainPage extends MainPageLayout {
 		display_grid.addColumn(Entry::getDescription).setCaption("Description");
 		display_grid.addColumn(Entry::getReportDate).setCaption("Date Reported");
 		display_grid.addColumn(Entry::getProblem).setCaption("Problem");
+		display_grid.addColumn(Entry::getReportedBy).setCaption("Reported By");
+		display_grid.addColumn(Entry::getTestedBy).setCaption("Tested By");
 		display_grid.addColumn(Entry::getPullOutDate).setCaption("Pull Out Date");
 		display_grid.addColumn(Entry::getReturnDate).setCaption("Return Date");
 		display_grid.addColumn(Entry::getStatus).setCaption("Status");
@@ -383,7 +393,7 @@ public class MainPage extends MainPageLayout {
 	 */
 	private Entry emptyEntry() {
 		return new Entry(0, "", "", "", new Date(DateTime.now().getMillis()), "", "",
-				"", new Date(DateTime.now().getMillis()), 0, "", new Date(DateTime.now().getMillis()), new Date(DateTime.now().getMillis()),
+				"", new Date(DateTime.now().getMillis()), 0, "", "", "", new Date(DateTime.now().getMillis()), new Date(DateTime.now().getMillis()),
 				0, 0, "", "", 0, 0,
 				"", "", "", 0, "", "", 0);
 	}
@@ -397,14 +407,17 @@ public class MainPage extends MainPageLayout {
 		offset = 0;
 		
 		manager.connect();
-		count = constructor.getEntryCount(manager);
+		if (CurrentUser.getId().equals("LOG")) count = constructor.getEntryCount(manager);
+		else if (CurrentUser.getId().equals("TSC")) count = constructor.getTSCCount(manager);
 		manager.disconnect();
 		
 		limit = (offset + limit > count) ? count - offset : limit;
 		
 		//System.out.println("-- Refresh --");
 		manager.connect();
-		List<Entry> update = constructor.constructEntry(manager, offset, limit);
+		List<Entry> update = null; 
+		if (CurrentUser.getId().equals("LOG")) update = constructor.constructEntry(manager, offset, limit);
+		else if (CurrentUser.getId().equals("TSC")) update = constructor.constructTSCEntry(manager, offset, limit);
 		manager.disconnect();
 		
 		List<String> updateSuppliers = constructor.constructSuppliers(manager);
@@ -427,7 +440,9 @@ public class MainPage extends MainPageLayout {
 		
 		//System.out.println("-- Refresh --");
 		manager.connect();
-		List<Entry> update = constructor.constructEntry(manager, offset, limit);
+		List<Entry> update = null;
+		if (CurrentUser.getId().equals("LOG")) update = constructor.constructEntry(manager, offset, limit);
+		else if (CurrentUser.getId().equals("TSC")) update = constructor.constructTSCEntry(manager, offset, limit);
 		manager.disconnect();
 		
 		display_grid.setItems(update);

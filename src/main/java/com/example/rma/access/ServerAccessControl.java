@@ -36,7 +36,7 @@ implements AccessControl {
 			auth.bind("CN=Administrator, CN=Users, DC=mgenesis, DC=local", "JpxL0F92");
 			
 			EntryCursor cursor = auth.search( 
-					"OU=User, OU=Logistics, DC=mgenesis, DC=local", 
+					"OU=User, OU=TSC, DC=mgenesis, DC=local", 
 					"(objectclass=*)", SearchScope.ONELEVEL 
 					);
 			
@@ -46,14 +46,35 @@ implements AccessControl {
 						&& entry.get("mailNickname").contains(username.substring(0, indexAt))) 
 							|| (entry.get("userPrincipalName") != null 
 								&& entry.get("userPrincipalName").toString().contains(username.substring(0, indexAt)))) {
-					System.out.println("Found it!");
+					System.out.println("Found it in TSC!");
 					
 					//success
 					result = "Admin";
-					CurrentUser.set(result, "", username);
+					CurrentUser.set(result, "TSC", username);
 					break;
 				}
 		    }
+			
+			if (result.isEmpty()) {
+				cursor = auth.search( 
+						"OU=User, OU=Logistics, DC=mgenesis, DC=local", 
+						"(objectclass=*)", SearchScope.ONELEVEL 
+						);
+				
+				for (Entry entry: cursor) {
+					if ((entry.get("mailNickname") != null 
+							&& entry.get("mailNickname").contains(username.substring(0, indexAt))) 
+							|| (entry.get("userPrincipalName") != null 
+								&& entry.get("userPrincipalName").toString().contains(username.substring(0, indexAt)))) {
+						System.out.println("Found it in Logistics!");
+						
+						//success
+						result = "Admin";
+						CurrentUser.set(result, "LOG", username);
+						break;
+					}
+				}
+			}
 			
 		} catch (LdapException e) {
 			//failure

@@ -18,6 +18,8 @@ public class Entry {
 	private Date reportDate;
 	private int quantity;
 	private String problem;
+	private String reportedBy;
+	private String testedBy;
 	private Date pullOutDate;
 	private Date returnDate;
 	private int nonWorkingDays;
@@ -45,6 +47,8 @@ public class Entry {
 			Date reportDate, 
 			int quantity, 
 			String problem, 
+			String reportedby,
+			String testedby,
 			Date pullOutDate, 
 			Date returnDate,
 			int nonWorkingDays, 
@@ -72,6 +76,8 @@ public class Entry {
 		this.reportDate = reportDate;
 		this.quantity = quantity;
 		this.problem = problem;
+		this.reportedBy = reportedby;
+		this.testedBy = testedby;
 		this.pullOutDate = pullOutDate;
 		this.returnDate = returnDate;
 		this.nonWorkingDays = nonWorkingDays;
@@ -330,5 +336,21 @@ public class Entry {
 
 	public void setSupplierReturned(String supplierReturned) {
 		this.supplierReturned = supplierReturned;
+	}
+
+	public String getReportedBy() {
+		return reportedBy;
+	}
+
+	public void setReportedBy(String reportedBy) {
+		this.reportedBy = reportedBy;
+	}
+
+	public String getTestedBy() {
+		return testedBy;
+	}
+
+	public void setTestedBy(String testedBy) {
+		this.testedBy = testedBy;
 	}
 }
