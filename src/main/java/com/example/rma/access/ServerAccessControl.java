@@ -39,9 +39,11 @@ implements AccessControl {
 					"OU=User, OU=TSC, DC=mgenesis, DC=local", 
 					"(objectclass=*)", SearchScope.ONELEVEL 
 					);
+			//System.out.println("TSC");
 			
 			for ( Entry entry : cursor )
 		    {
+				//System.out.println(entry.get("userPrincipalName"));
 				if ((entry.get("mailNickname") != null 
 						&& entry.get("mailNickname").contains(username.substring(0, indexAt))) 
 							|| (entry.get("userPrincipalName") != null 
@@ -60,8 +62,10 @@ implements AccessControl {
 						"OU=User, OU=Logistics, DC=mgenesis, DC=local", 
 						"(objectclass=*)", SearchScope.ONELEVEL 
 						);
+				//System.out.println("Logistics");
 				
 				for (Entry entry: cursor) {
+					//System.out.println(entry.get("mailNickname"));
 					if ((entry.get("mailNickname") != null 
 							&& entry.get("mailNickname").contains(username.substring(0, indexAt))) 
 							|| (entry.get("userPrincipalName") != null 
